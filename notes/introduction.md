@@ -32,7 +32,7 @@ The goal is to **"shift left"**—that is, bring security testing as early as po
 
 **Example SDLC flow with security integrated:**
 
-Planning → Analysis → Design → Coding → Testing → Maintenance ↑––––––––– Security Testing is introduced early
+Planning → Analysis → Design → Coding → Testing → Maintenance
 
 ---
 
