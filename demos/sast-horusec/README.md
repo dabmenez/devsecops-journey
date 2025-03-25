@@ -35,19 +35,27 @@ docker run -v /var/run/docker.sock:/var/run/docker.sock -v $(pwd):/src horuszup/
 
 ---
 
-## 🧪 Results
 
-- Horusec analyzed the source code and reported **vulnerabilities** such as:
-  - Hardcoded secrets
-  - Missing input validation
-  - Use of unsafe functions
-- Each finding includes:
-  - 📍 File & line number
-  - ⚠️ Description of the issue
-  - 💡 Recommendation
 
-You can view sample results in the `screenshots/` folder.
+### 📊 Scan Summary
 
+After running Horusec against the Juice Shop's frontend code, the tool identified a **large number of vulnerabilities**. These were automatically classified by severity levels — such as **critical**, **high**, and **medium** — helping prioritize which issues should be addressed first.
+
+Most of the findings were classified as **critical**, indicating serious issues in the source code that could pose significant risks if left unresolved. This demonstrates how valuable SAST tools like Horusec are when integrated early in the development cycle, allowing teams to catch vulnerabilities before they ever reach production.
+
+The tool also highlights exactly **where** in the code the issues are located, what kind of issue it is (e.g., hardcoded credentials, lack of input validation), and even suggests remediation actions. This makes it easier to take immediate and informed action on improving code security.
+
+
+Below is the output from the terminal after running Horusec:
+
+```
+In this analysis, a total of 238 possible vulnerabilities were found and we classified them into:
+Total of Vulnerability CRITICAL is: 206
+Total of Vulnerability HIGH is: 30
+Total of Vulnerability MEDIUM is: 2
+```
+
+You can view sample results in the `screenshots/`.
 ---
 
 ## 📁 References
