@@ -1,0 +1,111 @@
+# This file is a template, and might need editing before it works on your project.
+# To contribute improvements to CI/CD templates, please follow the Development guide at:
+# https://docs.gitlab.com/ee/development/cicd/templates.html
+# This specific template is located at:
+# https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/ci/templates/Getting-Started.gitlab-ci.yml
+
+# This is a sample GitLab CI/CD configuration file that should run without any modifications.
+# It demonstrates a basic 3 stage CI/CD pipeline. Instead of real tests or scripts,
+# it uses echo commands to simulate the pipeline execution.
+#
+# A pipeline is composed of independent jobs that run scripts, grouped into stages.
+# Stages run in sequential order, but jobs within stages run in parallel.
+#
+# For more information, see: https://docs.gitlab.com/ee/ci/yaml/index.html#stages
+
+image: docker:19.03.12
+
+services:
+  - docker:19.03.12-dind
+
+before_script:
+  # Print Docker info to confirm Docker-in-Docker is available
+  - docker info
+  # Install npm so we can use it in our jobs (e.g., npm install)
+  - apk --update add npm
+
+# Stages define the sequence of the pipeline. 
+# Each stage can contain multiple jobs; jobs in the same stage run in parallel.
+stages:
+  - build
+  - test
+  - security
+  - deploy
+
+# -------------------------------------------------------------------------------------
+# BUILD STAGE (Compiling or preparing the codebase)
+# -------------------------------------------------------------------------------------
+build-job:
+  stage: build
+  script:
+    - echo "Compiling the code..."
+    - echo "Compile complete."
+    # Example: Installing npm dependencies
+    - npm install
+  artifacts:
+    # Artifacts are files/directories saved after the job finishes.
+    # Here, we save the 'node_modules' folder to reuse in later stages.
+    paths:
+      - node_modules
+
+# -------------------------------------------------------------------------------------
+# TEST STAGE (Running unit tests, lint checks, etc.)
+# -------------------------------------------------------------------------------------
+unit-test-job:
+  stage: test
+  script:
+    - echo "Running unit tests... This will take about 60 seconds."
+    # Uncomment the line below to simulate a long-running test
+    # - sleep 60
+    - echo "Code coverage is 90%"
+
+lint-test-job:
+  stage: test
+  script:
+    - echo "Linting code... This will take about 10 seconds."
+    # Uncomment the line below to simulate a long-running lint process
+    # - sleep 10
+    - echo "No lint issues found."
+
+# -------------------------------------------------------------------------------------
+# SECURITY STAGE (Performing security checks: DAST, SAST, SCA)
+# -------------------------------------------------------------------------------------
+security-test-dast:
+  stage: security
+  script:
+    - echo "Security DAST testing..."
+    # Example: Running OWASP ZAP baseline scan against a sample container
+    - docker run -d -p 3000:3000 --name juice-shop bkimminich/juice-shop  # Spin up a vulnerable test app
+    - containerip=$(docker inspect -f "{{ .NetworkSettings.Networks.bridge.IPAddress }}" juice-shop)
+    - docker run -t --name dast owasp/zap2docker-stable zap-baseline.py -t http://$containerip:3000 || failure=true
+    # The next line inspects logs to determine whether any new warnings were found.
+    # If at least one is found, the job fails. Otherwise, it passes.
+    - if [[ "$(docker logs dast >& container-logs ; cat container-logs | grep 'WARN-NEW. [1-9]\d*'  | wc -l)" -gt 0 ]]; then echo 'Failing job due to identified failures'; exit 1; else echo "no issues found"; exit 0; fi
+
+security-test-sast:
+  stage: security
+  script:
+    - echo "Security SAST testing..."
+    - ls -l
+    # Example: Using the Horusec CLI for scanning code in the current directory
+    - docker run --name sast -v /var/run/docker.sock:/var/run/docker.sock -v $(pwd):/src horuszup/horusec-cli:v2.7 horusec start -p /src -P $(pwd) || failure=true
+    # The same pattern applies: Check logs for vulnerabilities, fail job if any are found
+    - if [[ "$(docker logs sast >& container-logs ; cat container-logs | grep 'Vulnerability MEDIUM is. [1-9]\d*'  | wc -l)" -gt 0 ]]; then echo 'Failing job due to identified failures'; exit 1; else echo "no issues found"; exit 0; fi
+
+security-test-sca:
+  stage: security
+  script:
+    - echo "Security SCA testing..."
+    # Example: Using Snyk to detect vulnerable dependencies in your project
+    - docker run --name sca --env SNYK_TOKEN -v $(pwd):/app snyk/snyk:node || failure=true
+    # Checking logs for any security issues; fail job if found
+    - if [[ "$(docker logs sca >& container-logs ; cat container-logs | grep 'found [1-9]\d* issues' | wc -l)" -gt 0 ]]; then echo 'Failing job due to identified failures'; exit 1; else echo "no issues found"; exit 0; fi
+
+# -------------------------------------------------------------------------------------
+# DEPLOY STAGE (Deploying the application to a live or test environment)
+# -------------------------------------------------------------------------------------
+deploy-job:
+  stage: deploy
+  script:
+    - echo "Deploying application..."
+    - echo "Application successfully deployed."
