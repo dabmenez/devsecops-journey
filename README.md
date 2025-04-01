@@ -27,7 +27,6 @@ This course is designed for professionals interested in cybersecurity, DevOps, a
 | `notes/`          | Notes and summaries from each section |
 | `demos/`          | Code used in hands-on demos |
 | `pipelines/`      | YAML pipeline examples (standard & secure) |
-| `resources/`      | Useful links and additional materials |
 | `README.md`       | This file |
 
 ---
@@ -59,7 +58,7 @@ This course is designed for professionals interested in cybersecurity, DevOps, a
 
 ## 📜 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License - see the [LICENSE]() file for details.
 
 ---
 
