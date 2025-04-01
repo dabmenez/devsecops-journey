@@ -56,9 +56,11 @@ This course is designed for professionals interested in cybersecurity, DevOps, a
 
 ---
 
-## 📜 License
+## 📜 Certification
 
-This project is licensed under the MIT License - see the [LICENSE]() file for details.
+I completed the course **"DevSecOps Fundamentals - Including Hands-On Demos"** by Northern APT on Udemy.
+
+📄 [View Certificate](https://www.udemy.com/certificate/UC-a2c1ae90-acb6-4f00-a32a-5844d4525e7f/)
 
 ---
 
